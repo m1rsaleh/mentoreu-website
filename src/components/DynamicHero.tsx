@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase, LandingSection } from '../lib/supabase';
 
 export default function DynamicHero() {
+  const { i18n, t } = useTranslation();
   const [hero, setHero] = useState<LandingSection | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -27,6 +29,14 @@ export default function DynamicHero() {
     }
   }
 
+  // Dile göre alan seç
+  const getLocalizedField = (field: 'title' | 'content') => {
+    if (!hero) return '';
+    const lang = i18n.language as 'tr' | 'en' | 'de';
+    const fieldKey = `${field}_${lang}` as keyof LandingSection;
+    return hero[fieldKey] || hero[`${field}_tr` as keyof LandingSection] || '';
+  };
+
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
@@ -35,13 +45,7 @@ export default function DynamicHero() {
   };
 
   const handleButtonClick = () => {
-    if (hero?.button_link) {
-      if (hero.button_link.startsWith('#')) {
-        scrollToSection(hero.button_link.substring(1));
-      } else {
-        window.location.href = hero.button_link;
-      }
-    }
+    scrollToSection('contact');
   };
 
   if (loading) {
@@ -70,35 +74,58 @@ export default function DynamicHero() {
       <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/50"></div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center">
+        <div className="inline-block bg-[#4CAF50] text-white px-6 py-2 rounded-full text-sm font-semibold mb-6 animate-fade-in-up">
+          {t('hero.badge')}
+        </div>
+
         <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight animate-fade-in-up">
-          {hero.title}
+          {getLocalizedField('title')}
         </h1>
 
         <p className="text-xl sm:text-2xl text-gray-100 mb-12 max-w-3xl mx-auto leading-relaxed animate-fade-in-up animation-delay-200">
-          {hero.subtitle}
+          {getLocalizedField('content')}
         </p>
 
-        {hero.button_text && (
-          <button
-            onClick={handleButtonClick}
-            className="bg-[#FF9800] text-white px-10 py-4 rounded-lg text-lg font-semibold hover:bg-[#F57C00] transition-all transform hover:scale-105 shadow-2xl animate-fade-in-up animation-delay-400"
-          >
-            {hero.button_text}
-          </button>
-        )}
+        <button
+          onClick={handleButtonClick}
+          className="bg-[#FF9800] text-white px-10 py-4 rounded-lg text-lg font-semibold hover:bg-[#F57C00] transition-all transform hover:scale-105 shadow-2xl animate-fade-in-up animation-delay-400"
+        >
+          {t('hero.cta')}
+        </button>
 
         <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-4xl mx-auto animate-fade-in-up animation-delay-600">
           <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl">
             <div className="text-4xl font-bold text-[#FF9800] mb-2">500+</div>
-            <div className="text-white">Başarılı Öğrenci</div>
+            <div className="text-white">
+              {i18n.language === 'en' 
+                ? 'Successful Students'
+                : i18n.language === 'de'
+                ? 'Erfolgreiche Studenten'
+                : 'Başarılı Öğrenci'
+              }
+            </div>
           </div>
           <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl">
             <div className="text-4xl font-bold text-[#FF9800] mb-2">8+</div>
-            <div className="text-white">Avrupa Ülkesi</div>
+            <div className="text-white">
+              {i18n.language === 'en' 
+                ? 'European Countries'
+                : i18n.language === 'de'
+                ? 'Europäische Länder'
+                : 'Avrupa Ülkesi'
+              }
+            </div>
           </div>
           <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl">
             <div className="text-4xl font-bold text-[#FF9800] mb-2">%95</div>
-            <div className="text-white">Başarı Oranı</div>
+            <div className="text-white">
+              {i18n.language === 'en' 
+                ? 'Success Rate'
+                : i18n.language === 'de'
+                ? 'Erfolgsquote'
+                : 'Başarı Oranı'
+              }
+            </div>
           </div>
         </div>
       </div>

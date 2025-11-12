@@ -1,3 +1,4 @@
+import './i18n';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Landing from './pages/Landing';
 import Blog from './pages/Blog';

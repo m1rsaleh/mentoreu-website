@@ -9,13 +9,20 @@ export default function AdminPopups() {
   const [saving, setSaving] = useState(false);              // ← BU SATIRI EKLE
   const [successMessage, setSuccessMessage] = useState(''); // ← BU SATIRI EKLE
   const [formData, setFormData] = useState({
-    title: '',
-    content: '',
-    button_text: 'Devam Et',
-    button_link: '',
-    show_delay: 3,
-    is_active: true
-  });
+  title_tr: '',
+  title_en: '',
+  title_de: '',
+  content_tr: '',
+  content_en: '',
+  content_de: '',
+  button_text_tr: 'Devam Et',
+  button_text_en: 'Continue',
+  button_text_de: 'Weiter',
+  button_link: '',
+  show_delay: 3,
+  is_active: true
+});
+const [activeTab, setActiveTab] = useState<'tr' | 'en' | 'de'>('tr');
 
   useEffect(() => {
     fetchPopups();
@@ -84,28 +91,40 @@ export default function AdminPopups() {
   }
 
   function handleEdit(popup: Popup) {
-    setEditingId(popup.id);
-    setFormData({
-      title: popup.title,
-      content: popup.content,
-      button_text: popup.button_text,
-      button_link: popup.button_link,
-      show_delay: popup.show_delay,
-      is_active: popup.is_active
-    });
-  }
+  setEditingId(popup.id);
+  setFormData({
+    title_tr: popup.title_tr,
+    title_en: popup.title_en || '',
+    title_de: popup.title_de || '',
+    content_tr: popup.content_tr,
+    content_en: popup.content_en || '',
+    content_de: popup.content_de || '',
+    button_text_tr: popup.button_text_tr,
+    button_text_en: popup.button_text_en || 'Continue',
+    button_text_de: popup.button_text_de || 'Weiter',
+    button_link: popup.button_link,
+    show_delay: popup.show_delay,
+    is_active: popup.is_active
+  });
+}
 
   function handleCancel() {
-    setEditingId(null);
-    setFormData({
-      title: '',
-      content: '',
-      button_text: 'Devam Et',
-      button_link: '',
-      show_delay: 3,
-      is_active: true
-    });
-  }
+  setEditingId(null);
+  setFormData({
+    title_tr: '',
+    title_en: '',
+    title_de: '',
+    content_tr: '',
+    content_en: '',
+    content_de: '',
+    button_text_tr: 'Devam Et',
+    button_text_en: 'Continue',
+    button_text_de: 'Weiter',
+    button_link: '',
+    show_delay: 3,
+    is_active: true
+  });
+}
 
   async function toggleActive(id: string, currentStatus: boolean) {
     try {
@@ -143,123 +162,147 @@ export default function AdminPopups() {
       </div>
 
       {editingId && (
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-xl font-bold text-[#2E2E2E] mb-6">
-            {editingId === 'new' ? 'Yeni Popup Oluştur' : 'Popup Düzenle'}
-          </h2>
+  <div className="bg-white rounded-xl shadow-lg p-6">
+    <h2 className="text-xl font-bold text-[#2E2E2E] mb-6">
+      {editingId === 'new' ? 'Yeni Popup Oluştur' : 'Popup Düzenle'}
+    </h2>
 
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-semibold text-[#2E2E2E] mb-2">
-                Başlık *
-              </label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none"
-                placeholder="Özel fırsat başlığı"
-              />
-            </div>
+    {/* Language Tabs */}
+    <div className="flex gap-2 mb-6 border-b border-gray-200">
+      {[
+        { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
+        { code: 'en', name: 'English', flag: '🇬🇧' },
+        { code: 'de', name: 'Deutsch', flag: '🇩🇪' }
+      ].map((lang) => (
+        <button
+          key={lang.code}
+          type="button"
+          onClick={() => setActiveTab(lang.code as 'tr' | 'en' | 'de')}
+          className={`flex items-center gap-2 px-4 py-2 font-semibold transition-all ${
+            activeTab === lang.code
+              ? 'border-b-2 border-[#4CAF50] text-[#4CAF50]'
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          <span>{lang.flag}</span>
+          {lang.name}
+        </button>
+      ))}
+    </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-[#2E2E2E] mb-2">
-                İçerik *
-              </label>
-              <textarea
-                value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none"
-                rows={5}
-                placeholder="Popup içeriğini buraya yazın..."
-              />
-            </div>
+    <div className="space-y-4">
+      <div>
+        <label className="block text-sm font-semibold text-[#2E2E2E] mb-2">
+          Başlık {activeTab === 'tr' && '*'}
+        </label>
+        <input
+          type="text"
+          value={formData[`title_${activeTab}` as keyof typeof formData] as string}
+          onChange={(e) => setFormData({ ...formData, [`title_${activeTab}`]: e.target.value })}
+          className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none"
+          placeholder={`Özel fırsat başlığı (${activeTab.toUpperCase()})`}
+        />
+      </div>
 
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-[#2E2E2E] mb-2">
-                  Buton Metni
-                </label>
-                <input
-                  type="text"
-                  value={formData.button_text}
-                  onChange={(e) => setFormData({ ...formData, button_text: e.target.value })}
-                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none"
-                  placeholder="Devam Et"
-                />
-              </div>
+      <div>
+        <label className="block text-sm font-semibold text-[#2E2E2E] mb-2">
+          İçerik {activeTab === 'tr' && '*'}
+        </label>
+        <textarea
+          value={formData[`content_${activeTab}` as keyof typeof formData] as string}
+          onChange={(e) => setFormData({ ...formData, [`content_${activeTab}`]: e.target.value })}
+          className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none"
+          rows={5}
+          placeholder={`Popup içeriği (${activeTab.toUpperCase()})...`}
+        />
+      </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-[#2E2E2E] mb-2">
-                  Buton Linki
-                </label>
-                <input
-                  type="text"
-                  value={formData.button_link}
-                  onChange={(e) => setFormData({ ...formData, button_link: e.target.value })}
-                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none"
-                  placeholder="#contact veya /page"
-                />
-              </div>
-            </div>
+      <div>
+        <label className="block text-sm font-semibold text-[#2E2E2E] mb-2">
+          Buton Metni
+        </label>
+        <input
+          type="text"
+          value={formData[`button_text_${activeTab}` as keyof typeof formData] as string}
+          onChange={(e) => setFormData({ ...formData, [`button_text_${activeTab}`]: e.target.value })}
+          className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none"
+          placeholder="Devam Et"
+        />
+      </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-[#2E2E2E] mb-2">
-                Gösterim Gecikmesi (saniye)
-              </label>
-              <input
-                type="number"
-                value={formData.show_delay}
-                onChange={(e) => setFormData({ ...formData, show_delay: parseInt(e.target.value) })}
-                className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none"
-                min="0"
-                max="60"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Popup sayfada bu kadar saniye sonra görünecek
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="is_active"
-                checked={formData.is_active}
-                onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                className="w-5 h-5 text-[#4CAF50] rounded"
-              />
-              <label htmlFor="is_active" className="text-sm font-semibold text-[#2E2E2E]">
-                Aktif (Yayında)
-              </label>
-            </div>
+      {activeTab === 'tr' && (
+        <>
+          <div>
+            <label className="block text-sm font-semibold text-[#2E2E2E] mb-2">
+              Buton Linki
+            </label>
+            <input
+              type="text"
+              value={formData.button_link}
+              onChange={(e) => setFormData({ ...formData, button_link: e.target.value })}
+              className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none"
+              placeholder="#contact veya /page"
+            />
           </div>
 
-          <div className="flex flex-col gap-3 mt-6">
-  {successMessage && (
-    <div className="w-full bg-green-100 text-green-800 px-4 py-3 rounded-lg">
-      {successMessage}
-    </div>
-  )}
-  <div className="flex gap-3">
-    <button
-      onClick={handleSave}
-      disabled={!formData.title || !formData.content || saving}
-      className="flex items-center gap-2 bg-[#4CAF50] text-white px-6 py-3 rounded-lg hover:bg-[#388E3C] font-semibold disabled:opacity-50"
-    >
-      <Save className="w-5 h-5" />
-      {saving ? 'Kaydediliyor...' : 'Kaydet'}
-    </button>
-    <button
-      onClick={handleCancel}
-      className="flex items-center gap-2 bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 font-semibold"
-    >
-      <X className="w-5 h-5" />
-      İptal
-    </button>
-  </div>
-</div>
-        </div>
+          <div>
+            <label className="block text-sm font-semibold text-[#2E2E2E] mb-2">
+              Gösterim Gecikmesi (saniye)
+            </label>
+            <input
+              type="number"
+              value={formData.show_delay}
+              onChange={(e) => setFormData({ ...formData, show_delay: parseInt(e.target.value) })}
+              className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none"
+              min="0"
+              max="60"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Popup sayfada bu kadar saniye sonra görünecek
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="is_active"
+              checked={formData.is_active}
+              onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+              className="w-5 h-5 text-[#4CAF50] rounded"
+            />
+            <label htmlFor="is_active" className="text-sm font-semibold text-[#2E2E2E]">
+              Aktif (Yayında)
+            </label>
+          </div>
+        </>
       )}
+    </div>
+
+    {successMessage && (
+      <div className="w-full bg-green-100 text-green-800 px-4 py-3 rounded-lg mt-4">
+        {successMessage}
+      </div>
+    )}
+
+    <div className="flex gap-3 mt-6">
+      <button
+        onClick={handleSave}
+        disabled={!formData.title_tr || !formData.content_tr || saving}
+        className="flex items-center gap-2 bg-[#4CAF50] text-white px-6 py-3 rounded-lg hover:bg-[#388E3C] font-semibold disabled:opacity-50"
+      >
+        <Save className="w-5 h-5" />
+        {saving ? 'Kaydediliyor...' : 'Kaydet'}
+      </button>
+      <button
+        onClick={handleCancel}
+        className="flex items-center gap-2 bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 font-semibold"
+      >
+        <X className="w-5 h-5" />
+        İptal
+      </button>
+    </div>
+  </div>
+)}
 
       <div className="bg-white rounded-xl shadow-lg overflow-hidden">
         <table className="w-full">
@@ -284,13 +327,13 @@ export default function AdminPopups() {
               popups.map((popup) => (
                 <tr key={popup.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">
-                    <div className="font-semibold text-[#2E2E2E]">{popup.title}</div>
+                    <div className="font-semibold text-[#2E2E2E]">{popup.title_tr}</div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="text-sm text-gray-600 truncate max-w-md">
-                      {popup.content}
-                    </div>
-                  </td>
+  {popup.content_tr}
+</div>
+                  </td> 
                   <td className="px-6 py-4 text-center">
                     <span className="text-sm text-gray-600">{popup.show_delay}s</span>
                   </td>

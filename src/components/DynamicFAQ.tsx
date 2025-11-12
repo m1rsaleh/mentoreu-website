@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { supabase, LandingSection } from '../lib/supabase';
 
 export default function DynamicFAQ() {
+  const { i18n } = useTranslation();
   const [faqs, setFaqs] = useState<LandingSection[]>([]);
   const [openIndex, setOpenIndex] = useState<number | null>(0);
   const [loading, setLoading] = useState(true);
@@ -44,40 +46,56 @@ export default function DynamicFAQ() {
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold text-[#4CAF50] mb-4">
-            Sıkça Sorulan Sorular
+            {i18n.language === 'en' 
+              ? 'Frequently Asked Questions'
+              : i18n.language === 'de'
+              ? 'Häufig gestellte Fragen'
+              : 'Sıkça Sorulan Sorular'
+            }
           </h2>
           <p className="text-xl text-[#2E2E2E]">
-            Merak ettiklerinizin cevapları burada
+            {i18n.language === 'en' 
+              ? 'Answers to your questions are here'
+              : i18n.language === 'de'
+              ? 'Antworten auf Ihre Fragen finden Sie hier'
+              : 'Merak ettiklerinizin cevapları burada'
+            }
           </p>
         </div>
 
         <div className="space-y-4">
-          {faqs.map((faq, index) => (
-            <div
-              key={faq.id}
-              className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100"
-            >
-              <button
-                onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="w-full px-8 py-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
-              >
-                <span className="text-lg font-semibold text-[#2E2E2E] pr-8">
-                  {faq.title}
-                </span>
-                <ChevronDown
-                  className={`w-6 h-6 text-[#4CAF50] transition-transform flex-shrink-0 ${
-                    openIndex === index ? 'transform rotate-180' : ''
-                  }`}
-                />
-              </button>
+          {faqs.map((faq, index) => {
+            const lang = i18n.language as 'tr' | 'en' | 'de';
+            const title = faq[`title_${lang}` as keyof LandingSection] || faq.title_tr || '';
+            const content = faq[`content_${lang}` as keyof LandingSection] || faq.content_tr || '';
 
-              {openIndex === index && (
-                <div className="px-8 pb-6 text-[#2E2E2E] leading-relaxed animate-fade-in-up">
-                  {faq.content}
-                </div>
-              )}
-            </div>
-          ))}
+            return (
+              <div
+                key={faq.id}
+                className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100"
+              >
+                <button
+                  onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                  className="w-full px-8 py-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+                >
+                  <span className="text-lg font-semibold text-[#2E2E2E] pr-8">
+                    {title}
+                  </span>
+                  <ChevronDown
+                    className={`w-6 h-6 text-[#4CAF50] transition-transform flex-shrink-0 ${
+                      openIndex === index ? 'transform rotate-180' : ''
+                    }`}
+                  />
+                </button>
+
+                {openIndex === index && (
+                  <div className="px-8 pb-6 text-[#2E2E2E] leading-relaxed animate-fade-in-up">
+                    {content}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

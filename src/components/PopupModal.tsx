@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { supabase, Popup } from '../lib/supabase';
 
 export default function PopupModal() {
+  const { i18n } = useTranslation();
   const [popup, setPopup] = useState<Popup | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -46,6 +48,14 @@ export default function PopupModal() {
     handleClose();
   }
 
+  // Dile göre alan seç
+  const getLocalizedField = (field: 'title' | 'content' | 'button_text') => {
+    if (!popup) return '';
+    const lang = i18n.language as 'tr' | 'en' | 'de';
+    const fieldKey = `${field}_${lang}` as keyof Popup;
+    return popup[fieldKey] || popup[`${field}_tr` as keyof Popup] || '';
+  };
+
   if (!isVisible || !popup) return null;
 
   return (
@@ -59,19 +69,19 @@ export default function PopupModal() {
         </button>
 
         <h2 className="text-2xl font-bold text-[#2E2E2E] mb-4 pr-8">
-          {popup.title}
+          {getLocalizedField('title')}
         </h2>
 
         <div className="text-gray-600 mb-6 whitespace-pre-wrap">
-          {popup.content}
+          {getLocalizedField('content')}
         </div>
 
-        {popup.button_text && (
+        {getLocalizedField('button_text') && (
           <button
             onClick={handleButtonClick}
             className="w-full bg-[#4CAF50] text-white px-6 py-3 rounded-lg hover:bg-[#388E3C] transition-colors font-semibold"
           >
-            {popup.button_text}
+            {getLocalizedField('button_text')}
           </button>
         )}
       </div>

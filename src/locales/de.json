@@ -1,0 +1,30 @@
+{
+  "nav": {
+    "services": "Dienstleistungen",
+    "how": "Wie es funktioniert",
+    "blog": "Blog",
+    "faq": "FAQ",
+    "contact": "Kontakt"
+  },
+  "hero": {
+    "badge": "Bildungsberatung in Europa",
+    "cta": "Kostenlose Beratung"
+  },
+  "form": {
+    "title": "Bewerben Sie sich für eine kostenlose Bewertung",
+    "subtitle": "Füllen Sie das Formular aus, wir melden uns in Kürze.",
+    "name": "Vollständiger Name",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "education": "Bildungsstatus",
+    "country": "Zielland",
+    "message": "Ihre Nachricht",
+    "privacy": "Ihre persönlichen Daten werden gemäß unserer Datenschutzrichtlinie geschützt.",
+    "submit": "Bewerbung absenden",
+    "success": "✅ Bewerbung erhalten!",
+    "error": "Bitte füllen Sie alle Pflichtfelder aus."
+  },
+  "footer": {
+    "rights": "Alle Rechte vorbehalten."
+  }
+}

@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Save, RotateCcw, Eye, Plus, Trash2 } from 'lucide-react';
+import { Save, Plus, Trash2, Eye } from 'lucide-react';
 import { supabase, LandingSection } from '../lib/supabase';
 import ImageUpload from '../components/ImageUpload';
 
 type TabType = 'hero' | 'features' | 'how_it_works' | 'faq';
+type LangTab = 'tr' | 'en' | 'de';
 
 export default function AdminLandingEditor() {
   const [activeTab, setActiveTab] = useState<TabType>('hero');
+  const [langTab, setLangTab] = useState<LangTab>('tr');
   const [sections, setSections] = useState<LandingSection[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -54,9 +56,13 @@ export default function AdminLandingEditor() {
       const { error } = await supabase
         .from('landing_sections')
         .update({
-          title: section.title,
+          title_tr: section.title_tr,
+          title_en: section.title_en,
+          title_de: section.title_de,
           subtitle: section.subtitle,
-          content: section.content,
+          content_tr: section.content_tr,
+          content_en: section.content_en,
+          content_de: section.content_de,
           image_url: section.image_url,
           button_text: section.button_text,
           button_link: section.button_link,
@@ -103,13 +109,8 @@ export default function AdminLandingEditor() {
     const currentTab = tabs.find(t => t.key === activeTab);
     if (!currentTab) return;
 
-    if (activeTab === 'faq' && (!newItem.title || !newItem.content)) {
-      setMessage({ type: 'error', text: 'Soru ve cevap alanları zorunludur.' });
-      return;
-    }
-
-    if ((activeTab === 'features' || activeTab === 'how_it_works') && (!newItem.title || !newItem.content)) {
-      setMessage({ type: 'error', text: 'Başlık ve içerik alanları zorunludur.' });
+    if (!newItem.title_tr || !newItem.content_tr) {
+      setMessage({ type: 'error', text: 'Türkçe başlık ve içerik zorunludur.' });
       return;
     }
 
@@ -124,9 +125,13 @@ export default function AdminLandingEditor() {
       const newSection = {
         section_key: `${currentTab.type}_${Date.now()}`,
         section_type: currentTab.type,
-        title: newItem.title || '',
+        title_tr: newItem.title_tr || '',
+        title_en: newItem.title_en || null,
+        title_de: newItem.title_de || null,
         subtitle: newItem.subtitle || null,
-        content: newItem.content || '',
+        content_tr: newItem.content_tr || '',
+        content_en: newItem.content_en || null,
+        content_de: newItem.content_de || null,
         image_url: newItem.image_url || null,
         button_text: newItem.button_text || null,
         button_link: newItem.button_link || null,
@@ -162,9 +167,19 @@ export default function AdminLandingEditor() {
     ));
   }
 
+  function updateNewItem(field: keyof LandingSection, value: any) {
+    setNewItem({ ...newItem, [field]: value });
+  }
+
   const filteredSections = sections.filter(s =>
     tabs.find(t => t.key === activeTab)?.type === s.section_type
   );
+
+  const getLangLabel = () => {
+    if (langTab === 'tr') return 'Türkçe';
+    if (langTab === 'en') return 'English';
+    return 'Deutsch';
+  };
 
   if (loading) {
     return (
@@ -182,19 +197,18 @@ export default function AdminLandingEditor() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-[#4CAF50] mb-2">Landing Page Editörü</h1>
-          <p className="text-[#2E2E2E]">Ana sayfa içeriğini düzenleyin</p>
+          <p className="text-[#2E2E2E]">Ana sayfa içeriğini 3 dilde düzenleyin</p>
         </div>
-        <div className="flex gap-3">
-          <a
-            href="/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-all font-semibold"
-          >
-            <Eye className="w-5 h-5" />
-            Önizle
-          </a>
-        </div>
+        
+        <a
+          href="/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-all font-semibold"
+        >
+          <Eye className="w-5 h-5" />
+          Önizle
+        </a>
       </div>
 
       {message && (
@@ -229,6 +243,41 @@ export default function AdminLandingEditor() {
         </div>
 
         <div className="p-8">
+          <div className="mb-6 border-b border-gray-200 pb-4">
+            <div className="flex gap-2">
+              <button
+                onClick={() => setLangTab('tr')}
+                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                  langTab === 'tr'
+                    ? 'bg-[#4CAF50] text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                🇹🇷 Türkçe
+              </button>
+              <button
+                onClick={() => setLangTab('en')}
+                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                  langTab === 'en'
+                    ? 'bg-[#4CAF50] text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                🇬🇧 English
+              </button>
+              <button
+                onClick={() => setLangTab('de')}
+                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                  langTab === 'de'
+                    ? 'bg-[#4CAF50] text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                🇩🇪 Deutsch
+              </button>
+            </div>
+          </div>
+
           {activeTab !== 'hero' && (
             <div className="mb-6">
               <button
@@ -236,9 +285,7 @@ export default function AdminLandingEditor() {
                 className="flex items-center gap-2 bg-[#FF9800] text-white px-6 py-3 rounded-lg hover:bg-[#F57C00] transition-all font-semibold"
               >
                 <Plus className="w-5 h-5" />
-                {activeTab === 'faq' && 'Yeni Soru Ekle'}
-                {activeTab === 'features' && 'Yeni Özellik Ekle'}
-                {activeTab === 'how_it_works' && 'Yeni Adım Ekle'}
+                Yeni Ekle
               </button>
             </div>
           )}
@@ -246,37 +293,37 @@ export default function AdminLandingEditor() {
           {showAddForm && (
             <div className="mb-8 border border-[#FF9800] rounded-lg p-6 bg-orange-50">
               <h3 className="text-lg font-bold text-[#2E2E2E] mb-4">
-                Yeni {activeTab === 'faq' ? 'Soru' : activeTab === 'features' ? 'Özellik' : 'Adım'}
+                Yeni Öğe Ekle
               </h3>
 
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-semibold text-[#2E2E2E] mb-2">
-                    {activeTab === 'faq' ? 'Soru' : 'Başlık'} *
+                    Başlık - {getLangLabel()} {langTab === 'tr' && '*'}
                   </label>
                   <input
                     type="text"
-                    value={newItem.title || ''}
-                    onChange={(e) => setNewItem({ ...newItem, title: e.target.value })}
+                    value={(newItem[`title_${langTab}` as keyof LandingSection] as string) || ''}
+                    onChange={(e) => updateNewItem(`title_${langTab}` as keyof LandingSection, e.target.value)}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none"
-                    placeholder={activeTab === 'faq' ? 'Soru' : 'Başlık'}
+                    placeholder="Başlık"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-semibold text-[#2E2E2E] mb-2">
-                    {activeTab === 'faq' ? 'Cevap' : 'İçerik'} *
+                    İçerik - {getLangLabel()} {langTab === 'tr' && '*'}
                   </label>
                   <textarea
-                    value={newItem.content || ''}
-                    onChange={(e) => setNewItem({ ...newItem, content: e.target.value })}
+                    value={(newItem[`content_${langTab}` as keyof LandingSection] as string) || ''}
+                    onChange={(e) => updateNewItem(`content_${langTab}` as keyof LandingSection, e.target.value)}
                     rows={4}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none resize-none"
-                    placeholder={activeTab === 'faq' ? 'Cevap' : 'İçerik'}
+                    placeholder="İçerik"
                   />
                 </div>
 
-                {(activeTab === 'features' || activeTab === 'how_it_works') && (
+                {(activeTab === 'features' || activeTab === 'how_it_works') && langTab === 'tr' && (
                   <div>
                     <label className="block text-sm font-semibold text-[#2E2E2E] mb-2">
                       İkon (Lucide Icon adı)
@@ -284,9 +331,9 @@ export default function AdminLandingEditor() {
                     <input
                       type="text"
                       value={newItem.icon || ''}
-                      onChange={(e) => setNewItem({ ...newItem, icon: e.target.value })}
+                      onChange={(e) => updateNewItem('icon', e.target.value)}
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none"
-                      placeholder="Target, GraduationCap, FileText, vb."
+                      placeholder="Target, GraduationCap, FileText"
                     />
                   </div>
                 )}
@@ -346,36 +393,34 @@ export default function AdminLandingEditor() {
                     </div>
                   </div>
 
-                  <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-semibold text-[#2E2E2E] mb-2">
-                        Başlık
+                        Başlık - {getLangLabel()}
                       </label>
                       <input
                         type="text"
-                        value={section.title || ''}
-                        onChange={(e) => updateSection(section.id, 'title', e.target.value)}
+                        value={(section[`title_${langTab}` as keyof LandingSection] as string) || ''}
+                        onChange={(e) => updateSection(section.id, `title_${langTab}` as keyof LandingSection, e.target.value)}
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none"
                         placeholder="Başlık"
                       />
                     </div>
 
-                    {section.section_type === 'hero' && (
-                      <div>
-                        <label className="block text-sm font-semibold text-[#2E2E2E] mb-2">
-                          Alt Başlık
-                        </label>
-                        <input
-                          type="text"
-                          value={section.subtitle || ''}
-                          onChange={(e) => updateSection(section.id, 'subtitle', e.target.value)}
-                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none"
-                          placeholder="Alt başlık"
-                        />
-                      </div>
-                    )}
+                    <div>
+                      <label className="block text-sm font-semibold text-[#2E2E2E] mb-2">
+                        İçerik - {getLangLabel()}
+                      </label>
+                      <textarea
+                        value={(section[`content_${langTab}` as keyof LandingSection] as string) || ''}
+                        onChange={(e) => updateSection(section.id, `content_${langTab}` as keyof LandingSection, e.target.value)}
+                        rows={4}
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none resize-none"
+                        placeholder="İçerik"
+                      />
+                    </div>
 
-                    {(section.section_type === 'feature' || section.section_type === 'how_it_works') && (
+                    {(section.section_type === 'feature' || section.section_type === 'how_it_works') && langTab === 'tr' && (
                       <div>
                         <label className="block text-sm font-semibold text-[#2E2E2E] mb-2">
                           İkon (Lucide Icon adı)
@@ -389,62 +434,49 @@ export default function AdminLandingEditor() {
                         />
                       </div>
                     )}
-                  </div>
 
-                  <div className="mt-4">
-                    <label className="block text-sm font-semibold text-[#2E2E2E] mb-2">
-                      İçerik
-                    </label>
-                    <textarea
-                      value={section.content || ''}
-                      onChange={(e) => updateSection(section.id, 'content', e.target.value)}
-                      rows={4}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none resize-none"
-                      placeholder="İçerik"
-                    />
-                  </div>
-
-                  {section.section_type === 'hero' && (
-                    <>
-                      <div className="mt-4">
-                        <label className="block text-sm font-semibold text-[#2E2E2E] mb-2">
-                          Görsel
-                        </label>
-                        <ImageUpload
-                          currentImageUrl={section.image_url || ''}
-                          onImageUrlChange={(url) => updateSection(section.id, 'image_url', url)}
-                        />
-                      </div>
-
-                      <div className="grid md:grid-cols-2 gap-6 mt-4">
+                    {section.section_type === 'hero' && langTab === 'tr' && (
+                      <>
                         <div>
                           <label className="block text-sm font-semibold text-[#2E2E2E] mb-2">
-                            Buton Metni
+                            Görsel
                           </label>
-                          <input
-                            type="text"
-                            value={section.button_text || ''}
-                            onChange={(e) => updateSection(section.id, 'button_text', e.target.value)}
-                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none"
-                            placeholder="Ücretsiz Danışmanlık Alın"
+                          <ImageUpload
+                            currentImageUrl={section.image_url || ''}
+                            onImageUrlChange={(url) => updateSection(section.id, 'image_url', url)}
                           />
                         </div>
 
-                        <div>
-                          <label className="block text-sm font-semibold text-[#2E2E2E] mb-2">
-                            Buton Linki
-                          </label>
-                          <input
-                            type="text"
-                            value={section.button_link || ''}
-                            onChange={(e) => updateSection(section.id, 'button_link', e.target.value)}
-                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none"
-                            placeholder="#contact"
-                          />
+                        <div className="grid md:grid-cols-2 gap-6">
+                          <div>
+                            <label className="block text-sm font-semibold text-[#2E2E2E] mb-2">
+                              Buton Metni
+                            </label>
+                            <input
+                              type="text"
+                              value={section.button_text || ''}
+                              onChange={(e) => updateSection(section.id, 'button_text', e.target.value)}
+                              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none"
+                              placeholder="Ücretsiz Danışmanlık Alın"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-semibold text-[#2E2E2E] mb-2">
+                              Buton Linki
+                            </label>
+                            <input
+                              type="text"
+                              value={section.button_link || ''}
+                              onChange={(e) => updateSection(section.id, 'button_link', e.target.value)}
+                              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none"
+                              placeholder="#contact"
+                            />
+                          </div>
                         </div>
-                      </div>
-                    </>
-                  )}
+                      </>
+                    )}
+                  </div>
 
                   <button
                     onClick={() => handleSave(section)}

@@ -1,0 +1,30 @@
+{
+  "nav": {
+    "services": "Hizmetler",
+    "how": "Nasıl Çalışır",
+    "blog": "Blog",
+    "faq": "SSS",
+    "contact": "İletişim"
+  },
+  "hero": {
+    "badge": "Avrupa'da Eğitim Danışmanlığı",
+    "cta": "Ücretsiz Danışmanlık Al"
+  },
+  "form": {
+    "title": "Ücretsiz Ön Değerlendirme İçin Başvurun",
+    "subtitle": "Formu doldurun, size en kısa sürede dönüş yapalım.",
+    "name": "Ad Soyad",
+    "email": "E-posta",
+    "phone": "Telefon",
+    "education": "Eğitim Durumu",
+    "country": "Hedef Ülke",
+    "message": "Mesajınız",
+    "privacy": "Kişisel verileriniz gizlilik politikamız çerçevesinde korunmaktadır.",
+    "submit": "Başvurumu Gönder",
+    "success": "✅ Başvurunuz Alındı!",
+    "error": "Lütfen tüm zorunlu alanları doldurun."
+  },
+  "footer": {
+    "rights": "Tüm hakları saklıdır."
+  }
+}

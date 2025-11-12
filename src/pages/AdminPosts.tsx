@@ -48,10 +48,10 @@ export default function AdminPosts() {
     }
   }
 
-  const filteredPosts = posts.filter(post =>
-    post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    post.author.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+ const filteredPosts = posts.filter(post =>
+  post.title_tr.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  post.author.toLowerCase().includes(searchTerm.toLowerCase())
+);
 
   if (loading) {
     return (
@@ -120,13 +120,13 @@ export default function AdminPosts() {
                     <td className="px-6 py-4">
                       <img
                         src={post.featured_image}
-                        alt={post.title}
+                        alt={post.title_tr}
                         className="w-16 h-16 object-cover rounded-lg"
                       />
                     </td>
                     <td className="px-6 py-4">
                       <div className="font-semibold text-[#2E2E2E] max-w-xs truncate">
-                        {post.title}
+                        {post.title_tr}
                       </div>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">{post.author}</td>

@@ -1,0 +1,30 @@
+{
+  "nav": {
+    "services": "Services",
+    "how": "How It Works",
+    "blog": "Blog",
+    "faq": "FAQ",
+    "contact": "Contact"
+  },
+  "hero": {
+    "badge": "Education Consultancy in Europe",
+    "cta": "Get Free Consultation"
+  },
+  "form": {
+    "title": "Apply for Free Evaluation",
+    "subtitle": "Fill out the form, we'll get back to you shortly.",
+    "name": "Full Name",
+    "email": "Email",
+    "phone": "Phone",
+    "education": "Education Status",
+    "country": "Target Country",
+    "message": "Your Message",
+    "privacy": "Your personal data is protected under our privacy policy.",
+    "submit": "Submit Application",
+    "success": "✅ Application Received!",
+    "error": "Please fill in all required fields."
+  },
+  "footer": {
+    "rights": "All rights reserved."
+  }
+}

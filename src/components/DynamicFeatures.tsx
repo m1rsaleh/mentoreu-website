@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as LucideIcons from 'lucide-react';
 import { supabase, LandingSection } from '../lib/supabase';
 
 export default function DynamicFeatures() {
+  const { i18n } = useTranslation();
   const [features, setFeatures] = useState<LandingSection[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -48,30 +50,46 @@ export default function DynamicFeatures() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold text-[#4CAF50] mb-4">
-            Neden MentorEU?
+            {i18n.language === 'en' 
+              ? 'Why MentorEU?'
+              : i18n.language === 'de'
+              ? 'Warum MentorEU?'
+              : 'Neden MentorEU?'
+            }
           </h2>
           <p className="text-xl text-[#2E2E2E] max-w-3xl mx-auto">
-            Avrupa eğitim yolculuğunuzda her adımda yanınızdayız
+            {i18n.language === 'en' 
+              ? 'We are with you every step of your European education journey'
+              : i18n.language === 'de'
+              ? 'Wir begleiten Sie auf jedem Schritt Ihrer europäischen Bildungsreise'
+              : 'Avrupa eğitim yolculuğunuzda her adımda yanınızdayız'
+            }
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {features.map((feature) => (
-            <div
-              key={feature.id}
-              className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100"
-            >
-              <div className="mb-6">
-                {feature.icon && getIcon(feature.icon)}
+          {features.map((feature) => {
+            const lang = i18n.language as 'tr' | 'en' | 'de';
+            const title = feature[`title_${lang}` as keyof LandingSection] || feature.title_tr || '';
+            const content = feature[`content_${lang}` as keyof LandingSection] || feature.content_tr || '';
+            
+            return (
+              <div
+                key={feature.id}
+                className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100"
+              >
+                <div className="mb-6">
+                  {feature.icon && getIcon(feature.icon)}
+                </div>
+                <h3 className="text-xl font-bold text-[#2E2E2E] mb-4">
+                  {title}
+                </h3>
+                <p className="text-[#2E2E2E] leading-relaxed">
+                  {content}
+                </p>
               </div>
-              <h3 className="text-xl font-bold text-[#2E2E2E] mb-4">
-                {feature.title}
-              </h3>
-              <p className="text-[#2E2E2E] leading-relaxed">
-                {feature.content}
-              </p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

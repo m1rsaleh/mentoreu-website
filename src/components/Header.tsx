@@ -1,11 +1,14 @@
 import { Menu, X, GraduationCap } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const isLanding = location.pathname === '/';
+  const { t } = useTranslation();
 
   const scrollToSection = (id: string) => {
     if (!isLanding) {
@@ -33,32 +36,33 @@ export default function Header() {
               onClick={() => scrollToSection('features')}
               className="text-[#2E2E2E] hover:text-[#4CAF50] transition-colors"
             >
-              Hizmetler
+              {t('nav.services')}
             </button>
             <button
               onClick={() => scrollToSection('how-it-works')}
               className="text-[#2E2E2E] hover:text-[#4CAF50] transition-colors"
             >
-              Nasıl Çalışır
+              {t('nav.how')}
             </button>
             <Link
               to="/blog"
               className="text-[#2E2E2E] hover:text-[#4CAF50] transition-colors"
             >
-              Blog
+              {t('nav.blog')}
             </Link>
             <button
               onClick={() => scrollToSection('faq')}
               className="text-[#2E2E2E] hover:text-[#4CAF50] transition-colors"
             >
-              SSS
+              {t('nav.faq')}
             </button>
             <button
               onClick={() => scrollToSection('contact')}
               className="bg-[#FF9800] text-white px-6 py-2.5 rounded-lg hover:bg-[#F57C00] transition-all transform hover:scale-105 font-medium"
             >
-              İletişim
+              {t('nav.contact')}
             </button>
+            <LanguageSwitcher />
           </div>
 
           <button
@@ -76,33 +80,36 @@ export default function Header() {
                 onClick={() => scrollToSection('features')}
                 className="text-[#2E2E2E] hover:text-[#4CAF50] transition-colors text-left"
               >
-                Hizmetler
+                {t('nav.services')}
               </button>
               <button
                 onClick={() => scrollToSection('how-it-works')}
                 className="text-[#2E2E2E] hover:text-[#4CAF50] transition-colors text-left"
               >
-                Nasıl Çalışır
+                {t('nav.how')}
               </button>
               <Link
                 to="/blog"
                 onClick={() => setIsMenuOpen(false)}
                 className="text-[#2E2E2E] hover:text-[#4CAF50] transition-colors text-left"
               >
-                Blog
+                {t('nav.blog')}
               </Link>
               <button
                 onClick={() => scrollToSection('faq')}
                 className="text-[#2E2E2E] hover:text-[#4CAF50] transition-colors text-left"
               >
-                SSS
+                {t('nav.faq')}
               </button>
               <button
                 onClick={() => scrollToSection('contact')}
                 className="bg-[#FF9800] text-white px-6 py-2.5 rounded-lg hover:bg-[#F57C00] transition-colors text-left"
               >
-                İletişim
+                {t('nav.contact')}
               </button>
+              <div className="pt-2">
+                <LanguageSwitcher />
+              </div>
             </div>
           </div>
         )}

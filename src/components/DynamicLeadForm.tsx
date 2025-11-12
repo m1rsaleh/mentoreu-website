@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Send, CheckCircle, MessageCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { supabase, FormSettings, EmailSettings, WhatsAppSettings, FormEducationOption, FormCountryOption } from '../lib/supabase';
 import emailjs from '@emailjs/browser';
 
 export default function DynamicLeadForm() {
+  const { t, i18n } = useTranslation();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -60,7 +62,6 @@ export default function DynamicLeadForm() {
 
   async function sendEmails() {
     if (!emailSettings || !emailSettings.service_id || !emailSettings.public_key) {
-      console.log('EmailJS not configured, skipping email notifications');
       return;
     }
 
@@ -98,8 +99,6 @@ export default function DynamicLeadForm() {
           emailSettings.public_key
         );
       }
-
-      console.log('Emails sent successfully');
     } catch (error) {
       console.error('Email sending error:', error);
     }
@@ -126,7 +125,7 @@ Detaylı görüşmek isterim.`;
     setError('');
 
     if (!formData.fullName || !formData.email || !formData.phone || !formData.educationStatus || formData.targetCountry.length === 0) {
-      setError('Lütfen tüm zorunlu alanları doldurun.');
+      setError(t('form.error'));
       setIsSubmitting(false);
       return;
     }
@@ -161,7 +160,7 @@ Detaylı görüşmek isterim.`;
 
       setTimeout(() => setIsSuccess(false), 30000);
     } catch (err: any) {
-      const errorMessage = err?.message || 'Bir hata oluştu. Lütfen daha sonra tekrar deneyin.';
+      const errorMessage = err?.message || t('form.error');
       setError(errorMessage);
       console.error('Form submission error:', err);
     } finally {
@@ -179,24 +178,15 @@ Detaylı görüşmek isterim.`;
     );
   }
 
-  const config = formSettings?.field_config || {
-    name: { label: 'Ad Soyad', placeholder: 'Adınız ve soyadınız', required: true },
-    email: { label: 'E-posta', placeholder: 'ornek@email.com', required: true },
-    phone: { label: 'Telefon', placeholder: '+90 555 123 4567', required: true },
-    education_status: { label: 'Eğitim Durumu', placeholder: 'Seçiniz', required: true },
-    target_country: { label: 'Hedef Ülke', placeholder: '', required: true },
-    message: { label: 'Mesaj', placeholder: 'Bizimle paylaşmak istediğiniz ek bilgiler...', required: false }
-  };
-
   return (
     <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-green-50 to-orange-50">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-4xl sm:text-5xl font-bold text-[#4CAF50] mb-4">
-            {formSettings?.section_title || 'Ücretsiz Ön Değerlendirme İçin Başvurun'}
+            {t('form.title')}
           </h2>
           <p className="text-xl text-[#2E2E2E]">
-            {formSettings?.section_description || 'Size özel danışmanlık hizmeti için formu doldurun'}
+            {t('form.subtitle')}
           </p>
         </div>
 
@@ -206,8 +196,7 @@ Detaylı görüşmek isterim.`;
               <div className="flex items-center gap-3 mb-4">
                 <CheckCircle className="w-8 h-8" />
                 <div>
-                  <h3 className="font-bold text-xl">✅ Başvurunuz Alındı!</h3>
-                  <p className="text-sm opacity-90 mt-1">{formSettings?.success_message || 'En kısa sürede sizinle iletişime geçeceğiz.'}</p>
+                  <h3 className="font-bold text-xl">{t('form.success')}</h3>
                 </div>
               </div>
               {whatsappSettings && whatsappSettings.is_enabled && (
@@ -216,7 +205,12 @@ Detaylı görüşmek isterim.`;
                   className="w-full bg-[#25D366] text-white px-6 py-4 rounded-lg hover:bg-[#128C7E] transition-all font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105"
                 >
                   <MessageCircle className="w-6 h-6" />
-                  WhatsApp'tan Hemen İletişime Geç
+                  {i18n.language === 'en' 
+                    ? 'Contact via WhatsApp'
+                    : i18n.language === 'de'
+                    ? 'Kontakt über WhatsApp'
+                    : 'WhatsApp\'tan İletişime Geç'
+                  }
                 </button>
               )}
             </div>
@@ -233,31 +227,31 @@ Detaylı görüşmek isterim.`;
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             <div>
               <label htmlFor="fullName" className="block text-sm font-semibold text-[#2E2E2E] mb-2">
-                {config.name.label} {config.name.required && '*'}
+                {t('form.name')} *
               </label>
               <input
                 type="text"
                 id="fullName"
-                required={config.name.required}
+                required
                 value={formData.fullName}
                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none transition-colors"
-                placeholder={config.name.placeholder}
+                placeholder={i18n.language === 'en' ? 'John Doe' : i18n.language === 'de' ? 'Max Mustermann' : 'Adınız ve soyadınız'}
               />
             </div>
 
             <div>
               <label htmlFor="email" className="block text-sm font-semibold text-[#2E2E2E] mb-2">
-                {config.email.label} {config.email.required && '*'}
+                {t('form.email')} *
               </label>
               <input
                 type="email"
                 id="email"
-                required={config.email.required}
+                required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none transition-colors"
-                placeholder={config.email.placeholder}
+                placeholder={i18n.language === 'en' ? 'john@example.com' : i18n.language === 'de' ? 'max@beispiel.de' : 'ornek@email.com'}
               />
             </div>
           </div>
@@ -265,31 +259,33 @@ Detaylı görüşmek isterim.`;
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             <div>
               <label htmlFor="phone" className="block text-sm font-semibold text-[#2E2E2E] mb-2">
-                {config.phone.label} {config.phone.required && '*'}
+                {t('form.phone')} *
               </label>
               <input
                 type="tel"
                 id="phone"
-                required={config.phone.required}
+                required
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none transition-colors"
-                placeholder={config.phone.placeholder}
+                placeholder="+90 555 123 4567"
               />
             </div>
 
             <div>
               <label htmlFor="educationStatus" className="block text-sm font-semibold text-[#2E2E2E] mb-2">
-                {config.education_status.label} {config.education_status.required && '*'}
+                {t('form.education')} *
               </label>
               <select
                 id="educationStatus"
-                required={config.education_status.required}
+                required
                 value={formData.educationStatus}
                 onChange={(e) => setFormData({ ...formData, educationStatus: e.target.value })}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none transition-colors"
               >
-                <option value="">{config.education_status.placeholder}</option>
+                <option value="">
+                  {i18n.language === 'en' ? 'Select' : i18n.language === 'de' ? 'Auswählen' : 'Seçiniz'}
+                </option>
                 {educationOptions.map((option) => (
                   <option key={option.id} value={option.option_text}>
                     {option.option_text}
@@ -301,7 +297,7 @@ Detaylı görüşmek isterim.`;
 
           <div className="mb-6">
             <label className="block text-sm font-semibold text-[#2E2E2E] mb-3">
-              {config.target_country.label} {config.target_country.required && '*'}
+              {t('form.country')} *
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {countries.map((country) => (
@@ -324,21 +320,20 @@ Detaylı görüşmek isterim.`;
 
           <div className="mb-6">
             <label htmlFor="message" className="block text-sm font-semibold text-[#2E2E2E] mb-2">
-              {config.message.label} {config.message.required && '*'}
+              {t('form.message')}
             </label>
             <textarea
               id="message"
               rows={4}
-              required={config.message.required}
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#4CAF50] focus:outline-none transition-colors resize-none"
-              placeholder={config.message.placeholder}
+              placeholder={i18n.language === 'en' ? 'Your message...' : i18n.language === 'de' ? 'Ihre Nachricht...' : 'Mesajınız...'}
             ></textarea>
           </div>
 
           <p className="text-sm text-[#2E2E2E] mb-6">
-            {formSettings?.privacy_notice || '* Bilgileriniz gizli tutulacaktır'}
+            {t('form.privacy')}
           </p>
 
           <button
@@ -346,7 +341,10 @@ Detaylı görüşmek isterim.`;
             disabled={isSubmitting}
             className="w-full bg-[#FF9800] text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-[#F57C00] transition-all transform hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {isSubmitting ? 'Gönderiliyor...' : (formSettings?.submit_button_text || 'Başvurumu Gönder')}
+            {isSubmitting 
+              ? (i18n.language === 'en' ? 'Sending...' : i18n.language === 'de' ? 'Wird gesendet...' : 'Gönderiliyor...') 
+              : t('form.submit')
+            }
             <Send className="w-5 h-5" />
           </button>
         </form>

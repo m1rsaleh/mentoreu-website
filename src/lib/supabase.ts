@@ -11,22 +11,29 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export interface BlogPost {
   id: string;
-  title: string;
-  slug: string;
-  featured_image: string;
+  title_tr: string;
+  title_en: string | null;
+  title_de: string | null;
+  content_tr: string;
+  content_en: string | null;
+  content_de: string | null;
+  slug_tr: string;
+  slug_en: string | null;
+  slug_de: string | null;
   author: string;
   category: string;
+  featured_image: string;
+  excerpt_tr: string;
+  excerpt_en: string | null;
+  excerpt_de: string | null;
+  status: 'draft' | 'published';
   tags: string[];
-  excerpt: string;
-  content: string;
-  status: 'published' | 'draft';
-  read_time: string;
-  meta_title?: string;
-  meta_description?: string;
-  user_id?: string;
+  read_time: string | null;  // ← null ekle veya sil
+  meta_title: string | null;
+  meta_description: string | null;
   created_at: string;
   updated_at: string;
-  published_at?: string;
+  author_name: string | null;
 }
 
 export interface Lead {
@@ -44,21 +51,24 @@ export interface Lead {
 export interface LandingSection {
   id: string;
   section_key: string;
-  section_type: 'hero' | 'feature' | 'how_it_works' | 'faq' | 'footer';
-  title?: string;
-  subtitle?: string;
-  content?: string;
-  image_url?: string;
-  button_text?: string;
-  button_link?: string;
-  icon?: string;
+  section_type: string;
+  title_tr: string;
+  title_en: string | null;
+  title_de: string | null;
+  subtitle: string | null;
+  content_tr: string;
+  content_en: string | null;
+  content_de: string | null;
+  image_url: string | null;
+  button_text: string | null;
+  button_link: string | null;
+  icon: string | null;
   order_number: number;
   is_active: boolean;
-  metadata?: any;
+  metadata: any;
   created_at: string;
   updated_at: string;
 }
-
 export interface ContactInfo {
   id: string;
   company_description: string;
@@ -140,14 +150,19 @@ export interface FormCountryOption {
 
 export interface Popup {
   id: string;
-  title: string;
-  content: string;
-  button_text: string;
+  title_tr: string;
+  title_en: string | null;
+  title_de: string | null;
+  content_tr: string;
+  content_en: string | null;
+  content_de: string | null;
+  button_text_tr: string;
+  button_text_en: string | null;
+  button_text_de: string | null;
   button_link: string;
   show_delay: number;
   is_active: boolean;
   created_at: string;
-  updated_at: string;
 }
 
 export interface FormTextSetting {
